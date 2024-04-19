@@ -1,18 +1,25 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -pedantic -std=c99
+CFLAGS =-W -Wall -Wextra -Wno-unused-parameter -Wno-unused-variable -std=c11 -pedantic
 LDLIBS = -lncurses
 
-SRCS = src/file_editor.c
-OBJS = $(SRCS:.c=.o)
-TARGET = main
+SRCDIR = src
+OBJDIR = obj
+
+SRCS = $(wildcard $(SRCDIR)/*.c)
+OBJS = $(patsubst $(SRCDIR)/%.c,$(OBJDIR)/%.o,$(SRCS))
+TARGET = file_editor
 
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
 	$(CC) $(OBJS) $(LDLIBS) -o $(TARGET)
 
-.c.o:
+$(OBJDIR)/%.o: $(SRCDIR)/%.c $(OBJDIR)/.dummy
 	$(CC) $(CFLAGS) -c $< -o $@
 
+$(OBJDIR)/.dummy:
+	mkdir -p $(OBJDIR)
+	touch $(OBJDIR)/.dummy
+
 clean:
-	$(RM) $(OBJS) $(TARGET)
+	$(RM) -r $(OBJDIR) $(TARGET)
